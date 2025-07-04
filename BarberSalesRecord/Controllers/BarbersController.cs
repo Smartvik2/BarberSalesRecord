@@ -1,4 +1,5 @@
-﻿using BarberSalesRecord.Interfaces;
+﻿using BarberSalesRecord.DTOs;
+using BarberSalesRecord.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 
 using Microsoft.AspNetCore.Mvc;
@@ -18,9 +19,9 @@ namespace BarberSalesRecord.Controllers
         }
 
         [HttpPost("add")]
-        public async Task<IActionResult> AddBarber([FromBody] string name)
+        public async Task<IActionResult> AddBarber([FromBody] BarbersDto dto)
         {
-            await _barberService.AddBarberAsync(name);
+            await _barberService.AddBarberAsync(dto);
             return Ok("Barber added successfully.");
         }
 

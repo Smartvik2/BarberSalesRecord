@@ -1,6 +1,8 @@
 ﻿using BarberSalesRecord.Data;
+using BarberSalesRecord.DTOs;
 using BarberSalesRecord.Interfaces;
 using BarberSalesRecord.Models;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace BarberSalesRecord.Services
@@ -14,12 +16,21 @@ namespace BarberSalesRecord.Services
             _context = context;
         }
 
-        public async Task<Barber> AddBarberAsync(string name)
+        public async Task<BarbersDto> AddBarberAsync(BarbersDto dto)
         {
-            var barber = new Barber { Name = name };
+            var barber = new Barber { 
+                Name = dto.Name,
+                CreatedAt = DateTime.UtcNow
+            };
             _context.Barbers.Add(barber);
             await _context.SaveChangesAsync();
-            return barber;
+            //return barber;
+            return new BarbersDto
+            {
+                //Id = barber.Id,
+                Name = barber.Name,
+                CreatedAt = barber.CreatedAt
+            };
         }
 
         public async Task<List<Barber>> GetBarbersAsync()

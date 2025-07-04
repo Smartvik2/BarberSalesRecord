@@ -34,6 +34,12 @@ namespace BarberSalesRecord.Services
             var result = await _userManager.CreateAsync(user, dto.Password);
             if (!result.Succeeded)
                 return string.Join(" | ", result.Errors.Select(e => e.Description));
+            var email = await _userManager.FindByEmailAsync(dto.Email);
+            if (email == null)
+                return "Invalid Email";
+            var passWord = await _userManager.FindByIdAsync(dto.Password);
+            if (passWord == null)
+                return "Invalid Password";
 
             if (user.IsApproved)
                 await _userManager.AddToRoleAsync(user, "Owner");
@@ -46,11 +52,17 @@ namespace BarberSalesRecord.Services
         public async Task<string> LoginAsync(LoginDto dto)
         {
             var user = await _userManager.FindByEmailAsync(dto.Email);
-            if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
-                return "Invalid credentials.";
+            if (user == null)
+                return "Invalid Email";
+
+            if (!await _userManager.CheckPasswordAsync(user, dto.Password))
+                return "Invalid Password";
 
             if (!user.IsApproved)
                 return "Account not yet approved by Owner.";
+
+            // Continue with login logic (e.g., generate JWT token, etc.)
+
 
             var roles = await _userManager.GetRolesAsync(user);
             var token = JwtHelper.GenerateToken(user, roles, _config);
